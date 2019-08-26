@@ -20,25 +20,28 @@ mongoose.connect(MONGODB_URI, {useNewUrlParser: true});
 
 app.get("/scrape", function(req, res) {
     
-    axios.get("http://nytimes.com").then(function(response) {
+    axios.get("http://ign.com/news").then(function(response) {
       
       var $ = cheerio.load(response.data);
   
-      $("article h2").each(function(i, element) {
+      $("article").each(function(i, element) {
        
         var result = {};
 
-        result.title = $(this).children("a").text();
-
-        result.link = $(this).children("a").attr("href");
-  
-        db.Article.create(result)
-          .then(function(dbArticle) {
-            console.log(dbArticle);
-          })
-          .catch(function(err) {
-            console.log(err);
-          });
+        result.link = $(this)
+            .children("div")
+            .children(".item-details")
+            .children("a")
+            .attr("href");
+        console.log(result);
+        
+        // db.Article.create(result)
+        //   .then(function(dbArticle) {
+        //     console.log(dbArticle);
+        //   })
+        //   .catch(function(err) {
+        //     console.log(err);
+        //   });
       });
   
       res.send("Scrape Complete");
